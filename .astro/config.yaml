@@ -1,0 +1,6 @@
+project:
+  name: elt-jobs
+webserver:
+  memory: 512M
+scheduler:
+  memory: 512M
