@@ -18,14 +18,14 @@ jobs:
       - name: Sync Code to GCP VM via RSYNC
         uses: easingthemes/ssh-deploy@v5.0.0
         with:
-          host: ${{ secrets.GCP_HOST }}
-          username: ${{ secrets.GCP_USERNAME }}
-          key: ${{ secrets.GCP_SSH_KEY }}
-          source: "."
-          target: "~/developer-trends-elt"
-          args: "-avz --exclude='.git*' --exclude='.env' --exclude='credentials.json'"
+          SSH_PRIVATE_KEY: ${{ secrets.GCP_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.GCP_HOST }}
+          REMOTE_USER: ${{ secrets.GCP_USERNAME }}
+          SOURCE: "."
+          TARGET: "~/developer-trends-elt"
+          EXCLUDE: "/.git*,/.env,/credentials.json,/docker-compose.yml"
 
-      - name: Inject Credentials & Reload Docker Compose
+      - name: Inject Credentials
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.GCP_HOST }}
