@@ -18,6 +18,7 @@ def upload_to_gcs(source_file_path,destination_blob_name):
         print(f"File {source_file_path} succeed add uploaded to GCS")
     except Exception as e:
         print(f"Failed to upload to GCS")
+        raise e
 
 def load_from_gcs(source_blob_name):
     try:
