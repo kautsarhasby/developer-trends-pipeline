@@ -1,0 +1,41 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to GCP VM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Sync Code to GCP VM via RSYNC
+        uses: appleboy/rsync-action@v0.1.1.0
+        with:
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USERNAME }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          source: "."
+          target: "~/developer-trends-elt"
+          args: "-avz --exclude='.git*' --exclude='.env' --exclude='credentials.json'"
+
+      - name: Inject Credentials & Reload Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USERNAME }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          script: |
+            mkdir -p ~/developer-trends-elt
+            cd ~/developer-trends-elt
+
+            cat << 'EOF' > credentials.json
+            ${{ secrets.GCP_CREDENTIALS }}
+            EOF
+            chmod 600 credentials.json

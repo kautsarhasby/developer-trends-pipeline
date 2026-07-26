@@ -3,31 +3,16 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.google.cloud.operators.bigquery import (
     BigQueryInsertJobOperator
 )
+from utils.gcs_client import (upload_to_gcs,load_from_gcs)
 from datetime import datetime, timedelta
 from google.oauth2 import service_account
 from google.cloud import bigquery
 import requests
-import boto3
-from botocore.client import Config
 import io
 import os
 import time
 import json
 import gzip
-
-MINIO_ACCESS_KEY = os.getenv("MINIO_ROOT_USER", "minioadmin")
-MINIO_SECRET_KEY = os.getenv("MINIO_ROOT_PASSWORD", "minioadminpassword")
-MINIO_CONFIG = {
-    "endpoint_url": "http://minio-storage:9000",
-    "aws_access_key_id": MINIO_ACCESS_KEY,
-    "aws_secret_access_key": MINIO_SECRET_KEY,
-    "config": Config(
-        signature_version="s3v4",
-        connect_timeout=60,  
-        read_timeout=60,
-    ),
-    "region_name": "us-east-1",
-}
 
 default_args = {
     'owner' : 'airflow',
@@ -68,22 +53,14 @@ def extract_and_load_to_storage(**kwargs):
 
     if response.status_code != 200:
         raise Exception(f"Failed to download on {formatted_time}, status code : {response.status_code}")
-    
     file_data = io.BytesIO(response.content)
-    s3_client = boto3.client('s3',**MINIO_CONFIG)
-
-    s3_client.put_object(
-        Bucket="github-raw-data",
-        Key=f"github-{file_name}",
-        Body=file_data
-    )
+    upload_to_gcs(file_data,f"raw/github/github-{file_name}")
     print(f"File {file_name} successfuly loaded")
 
 def load_to_bq_staging(**kwargs):
-    s3_client = boto3.client('s3',**MINIO_CONFIG)
-    target_obj = s3_client.get_object(Bucket="github-raw-data",Key=f"github-{file_name}",)
-    file_content = target_obj["Body"].read()
-    decompressed = gzip.decompress(file_content)
+    blob_name = f"github-{file_name}"
+    file_bytes = load_from_gcs(blob_name)
+    decompressed = gzip.decompress(file_bytes)
 
     wrapped_lines = []
     for line in decompressed.splitlines():
@@ -171,7 +148,7 @@ with DAG(
     'elt_github_global_pipeline',
     default_args=default_args,
     description="Pipeline ELT Global Open Source Analytics",
-    schedule=None,
+    schedule='@daily',
     catchup=False,
     template_searchpath=[sql_path]
 ) as dag:
