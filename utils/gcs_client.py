@@ -24,8 +24,9 @@ def load_from_gcs(source_blob_name):
         bucket = storage_client.bucket(bucket_name=BUCKET_NAME)
         blob = bucket.blob(source_blob_name)
         content = blob.download_as_bytes()
-        print(f"File {source_blob_name} succeed downloaded from GCS")
+        print(f"File {source_blob_name} succeed load from GCS")
         return content
     except Exception as e:
-        print(f"Failed to upload to GCS")
+        print(f"Failed load from GCS")
+        raise e
     

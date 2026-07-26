@@ -54,6 +54,10 @@ def extract_and_load_to_storage(**kwargs):
 def load_to_bq_staging(**kwargs):
     blob_name = f"github-{file_name}"
     file_bytes = load_from_gcs(blob_name)
+
+    if not file_bytes:
+        raise ValueError(f"File {blob_name} empty (0 bytes)")
+    
     decompressed = gzip.decompress(file_bytes)
 
     wrapped_lines = []

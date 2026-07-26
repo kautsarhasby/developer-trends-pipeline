@@ -35,7 +35,7 @@ jobs:
             mkdir -p ~/developer-trends-elt
             cd ~/developer-trends-elt
 
-            cat << 'EOF' > credentials.json
+            cat << EOF > credentials.json
             ${{ secrets.GCP_CREDENTIALS }}
             EOF
             chmod 600 credentials.json
