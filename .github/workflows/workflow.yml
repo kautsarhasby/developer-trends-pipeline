@@ -39,5 +39,6 @@ jobs:
             ${{ secrets.GCP_CREDENTIALS }}
             EOF
             chmod 600 credentials.json
+            export ASTRO_TELEMETRY_DISABLED=1
             astro dev stop || true
-            astro dev start
+            astro dev start --wait 5m
