@@ -11,7 +11,7 @@ def get_bq_client():
     if os.path.exists(CREDENTIALS_PATH):
         credentials = service_account.Credentials.from_service_account_file(
             CREDENTIALS_PATH,
-            SCOPES
+            scopes=SCOPES
         )
         bq_client = bigquery.Client(credentials=credentials,project=credentials.project_id)
     else:
