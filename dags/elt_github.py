@@ -3,9 +3,9 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.google.cloud.operators.bigquery import (
     BigQueryInsertJobOperator
 )
+from utils.bq_client import get_bq_client
 from utils.gcs_client import (upload_to_gcs,load_from_gcs)
 from datetime import datetime, timedelta
-from google.oauth2 import service_account
 from google.cloud import bigquery
 import requests
 import io
@@ -37,12 +37,6 @@ sql_path = os.path.abspath(
     os.path.join(current_dir, "..", "include", "sql")
 )
 
-
-def get_bq_client():
-    credentials_path = os.path.join(current_dir, "..", "include","credentials.json")
-    credentials = service_account.Credentials.from_service_account_file(credentials_path)
-    bq_client = bigquery.Client(project=credentials.project_id,credentials=credentials)
-    return bq_client, credentials.project_id
 
 
 def extract_and_load_to_storage(**kwargs):
