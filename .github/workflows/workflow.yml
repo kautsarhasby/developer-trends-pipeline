@@ -39,3 +39,6 @@ jobs:
             ${{ secrets.GCP_CREDENTIALS }}
             EOF
             chmod 600 credentials.json
+            docker compose down
+            docker compose up -d --build
+
