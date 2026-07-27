@@ -67,7 +67,7 @@ def load_to_bq_staging(**kwargs):
     formatted_time = logical_date.strftime("%Y-%m-%d")
     formatted_hour = logical_date.hour
     file_name = f"{formatted_time}-{formatted_hour}-stackexchange.json.gz"
-    blob_name = f"github-{file_name}"
+    blob_name = f"stackexchange/{file_name}-stackexchange"
     file_bytes = load_from_gcs(blob_name)
     bq_client, project_id = get_bq_client()
     table_id = f"{project_id}.stackexchange_analytics.staging_stackexchange_events"

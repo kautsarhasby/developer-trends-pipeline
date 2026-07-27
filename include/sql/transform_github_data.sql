@@ -26,5 +26,5 @@ ON
 GROUP BY
     repo_name
 ORDER BY
-    hot_score DESC;
+    hot_score DESC,
     total_stars DESC;
