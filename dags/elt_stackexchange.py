@@ -76,9 +76,6 @@ def load_to_bq_staging(**kwargs):
         source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
         autodetect=True,
         write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
-        schema_update_options=[
-            bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION
-        ]
     )
     data_stream = io.BytesIO(file_bytes)
     load_job = bq_client.load_table_from_file(data_stream,table_id,job_config=job_config)
