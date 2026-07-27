@@ -2,7 +2,7 @@ CREATE OR REPLACE TABLE `github_analytics.fact_hot_topics` AS
 SELECT 
     LAX_STRING(a.raw_content.repo.name) as repo_name,
     CASE
-        WHEN MAX(b.language)  IN ('Python', 'Jupiter') THEN 'Python / Data Science'
+        WHEN MAX(b.language)  IN ('Python', 'Jupyter Notebook') THEN 'Python / Data Science'
         WHEN MAX(b.language) IN ('JavaScript', 'TypeScript', 'Vue', 'React') THEN 'JavaScript Programming / Web'
         WHEN MAX(b.language) IN ('Rust', 'C++','C','Go')  THEN 'Systems Programming'
         WHEN MAX(b.language) IN ('Java','Kotlin')  THEN 'Java Programming'
@@ -27,3 +27,4 @@ GROUP BY
     repo_name
 ORDER BY
     hot_score DESC;
+    total_stars DESC;
